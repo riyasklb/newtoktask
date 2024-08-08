@@ -14,7 +14,7 @@ class AlertService {
     _navigationService = _getIt.get<NavigationService>();
   }
 
-  void showToasr({
+  void showToast({
     required String text,
     IconData icon = Icons.info,
   }) {

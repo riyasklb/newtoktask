@@ -10,7 +10,7 @@ import 'package:newtoktask/service/media_service%20.dart';
 import 'package:newtoktask/service/navigation_service.dart';
 import 'package:newtoktask/service/storge_service.dart';
 
-Future<void> setupfirebase() async {
+Future<void> setupFirebase() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -27,7 +27,7 @@ Future<void> setupfirebase() async {
 
 
 
-Future<void> registerservice() async {
+Future<void> registerServices() async {
   final GetIt getIt = GetIt.instance;
   getIt.registerSingleton<AuthService>(
     AuthService(),

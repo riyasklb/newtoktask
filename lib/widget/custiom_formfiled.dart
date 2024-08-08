@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-class CustiomFormfiled extends StatelessWidget {
-  CustiomFormfiled({
+class CustomFormField extends StatelessWidget {
+  CustomFormField({
     super.key,
     required this.hintText,
-    required this.regExpressionvalidation,
+    required this.regExpressionValidation,
     required this.onSaved,
   });
   final String hintText;
-  final RegExp regExpressionvalidation;
+  final RegExp regExpressionValidation;
   final void Function(String?) onSaved;
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class CustiomFormfiled extends StatelessWidget {
       autovalidateMode: AutovalidateMode.onUserInteraction,
       onSaved: onSaved,
       validator: (value) {
-        if (value != null && regExpressionvalidation.hasMatch(value)) {
+        if (value != null && regExpressionValidation.hasMatch(value)) {
           return null;
         }
         return 'Enter a vaid ${hintText}';

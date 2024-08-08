@@ -6,14 +6,14 @@ import 'package:newtoktask/service/auth_service.dart';
 import 'package:newtoktask/service/database_service.dart';
 import 'package:newtoktask/service/navigation_service.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class UserPage extends StatefulWidget {
+  const UserPage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<UserPage> createState() => _UserPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _UserPageState extends State<UserPage> {
   final GetIt _getIt = GetIt.instance;
   late NavigationService _navigationService;
   late AuthService _authService;
@@ -32,15 +32,15 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Message'),
+        title: Text('User'),
         actions: [
           IconButton(
             onPressed: () async {
               bool result = await _authService.logout();
               if (result) {
                 _navigationService.pushReplacementNamed("/login");
-                _alertService.showToasr(
-                    text: 'User registerd successfuly', icon: Icons.check);
+                _alertService.showToast(
+                    text: 'User Logout Successfully', icon: Icons.check);
               }
             },
             icon: Icon(Icons.logout),

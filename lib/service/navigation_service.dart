@@ -1,17 +1,19 @@
-
 import 'package:flutter/material.dart';
-import 'package:newtoktask/pages/home_page.dart';
+import 'package:newtoktask/pages/admin_page.dart';
+import 'package:newtoktask/pages/user_page.dart';
 import 'package:newtoktask/pages/login_page.dart';
 import 'package:newtoktask/pages/register_page.dart';
+import 'package:newtoktask/pages/splash_screen.dart';
 
 class NavigationService {
   late GlobalKey<NavigatorState> _navigatorkey;
 
   final Map<String, Widget Function(BuildContext)> _routes = {
     "/login": (context) => LoginPage(),
-    "/home": (context) => HomePage(),
-    "/registration": (context) => ResgisterPage(),
-
+    "/userHome": (context) => UserPage(),
+    '/adminHome': (context) => AdminPage(),
+    "/registration": (context) => RegisterPage(),
+    "/splash": (context) => SplashScreen(), // Add SplashScreen route
   };
 
   GlobalKey<NavigatorState>? get navigatorkey {

@@ -1,25 +1,33 @@
 class UserProfile {
-  String? uid;
-  String? name;
-  String? pfpURL;
+  final String uid;
+  final String name;
+  final String pfpURL;
+  final String role;  // Assuming you have a role field
 
   UserProfile({
     required this.uid,
-    required this.name, this.pfpURL,
+    required this.name,
+    required this.pfpURL,
+    required this.role,
   });
 
-  // Named constructor for JSON deserialization
-  UserProfile.fromJson(Map<String, dynamic> json)
-      : uid = json['uid'],
-        name = json['name'],
-        pfpURL = json['pfpURL'];
-
-  // Method for JSON serialization
+  // Convert a UserProfile instance into a Map
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{}; // Corrected map initialization
-    data['uid'] = uid;
-    data['name'] = name;
-    data['pfpURL'] = pfpURL;
-    return data;
+    return {
+      'uid': uid,
+      'name': name,
+      'pfpURL': pfpURL,
+      'role': role,
+    };
+  }
+
+  // Convert a Map into a UserProfile instance
+  factory UserProfile.fromJson(Map<String, dynamic> json) {
+    return UserProfile(
+      uid: json['uid'],
+      name: json['name'],
+      pfpURL: json['pfpURL'],
+      role: json['role'],
+    );
   }
 }
