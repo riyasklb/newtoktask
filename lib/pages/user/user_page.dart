@@ -1,4 +1,3 @@
-import 'package:delightful_toast/delight_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:newtoktask/service/alert_service.dart';
@@ -6,20 +5,19 @@ import 'package:newtoktask/service/auth_service.dart';
 import 'package:newtoktask/service/database_service.dart';
 import 'package:newtoktask/service/navigation_service.dart';
 
-class AdminPage extends StatefulWidget {
-  const AdminPage({super.key});
+class UserPage extends StatefulWidget {
+  const UserPage({super.key});
 
   @override
-  State<AdminPage> createState() => _UserPageState();
+  State<UserPage> createState() => _UserPageState();
 }
 
-class _UserPageState extends State<AdminPage> {
+class _UserPageState extends State<UserPage> {
   final GetIt _getIt = GetIt.instance;
   late NavigationService _navigationService;
   late AuthService _authService;
   late DatabaseService _databaseService;
   late AlertService _alertService;
-
   @override
   void initState() {
     _authService = _getIt.get<AuthService>();
@@ -33,39 +31,26 @@ class _UserPageState extends State<AdminPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ADMIN'),
+        title: Text('User'),
         actions: [
           IconButton(
             onPressed: () async {
-              // Call the logout method
               bool result = await _authService.logout();
-
               if (result) {
-                // Clear any local variables or data
-                _clearLocalData();
-
-                // Navigate to the login page
                 _navigationService.pushReplacementNamed("/login");
-                
-
-                // Show a success message
                 _alertService.showToast(
-                    text: 'User logged out successfully', icon: Icons.check);
-              } else {
-                // Show an error message if logout fails
-                _alertService.showToast(
-                    text: 'Logout failed, please try again', icon: Icons.error);
+                    text: 'User Logout Successfully', icon: Icons.check);
               }
             },
             icon: Icon(Icons.logout),
           ),
         ],
       ),
-      body: _buildUI(),
+      body: _buidUI(),
     );
   }
 
-  Widget _buildUI() {
+  Widget _buidUI() {
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -74,22 +59,22 @@ class _UserPageState extends State<AdminPage> {
         ),
         child: Column(
           children: [
-            _profileList(),
+            _profilelist(),
           ],
         ),
       ),
     );
   }
 
-  Widget _profileList() {
-    return Column(children: [Text('')]);
-  }
-
-  // Method to clear local data
-  void _clearLocalData() {
-    // Clear any local storage, caches, or data here
-    // Example:
-    // _authService.clearUserData();
-    // _databaseService.clearCache();
+  Widget _profilelist() {
+    return Column(
+      children: [
+        InkWell(
+            onTap: () {
+              _navigationService.pushNamed('/countylistpage');
+            },
+            child: Text('users data'))
+      ],
+    );
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:newtoktask/pages/admin_page.dart';
-import 'package:newtoktask/pages/user_page.dart';
+import 'package:newtoktask/pages/admin/admin_page.dart';
+import 'package:newtoktask/pages/admin/location_selection_page.dart';
+import 'package:newtoktask/pages/user/country_list_page.dart';
+import 'package:newtoktask/pages/user/user_page.dart';
 import 'package:newtoktask/pages/login_page.dart';
 import 'package:newtoktask/pages/register_page.dart';
 import 'package:newtoktask/pages/splash_screen.dart';
@@ -14,6 +16,8 @@ class NavigationService {
     '/adminHome': (context) => AdminPage(),
     "/registration": (context) => RegisterPage(),
     "/splash": (context) => SplashScreen(), // Add SplashScreen route
+    "/addlocationpage": (context) => AddLocationScreen(),
+    "/countylistpage":(context)=>LocationListScreen(),
   };
 
   GlobalKey<NavigatorState>? get navigatorkey {
