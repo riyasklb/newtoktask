@@ -169,8 +169,7 @@ class _ResgisterPageState extends State<ResgisterPage> {
                         userprofile: UserProfile(
                             uid: _authService.user!.uid,
                             name: name,
-                            // pfpURL: pfpURL
-                            ));
+                            pfpURL: pfpURL));
 
                     print('-------------6------------------');
                     setState(() {
