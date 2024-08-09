@@ -6,36 +6,27 @@ import 'package:newtoktask/pages/auth/splash_screen.dart';
 import 'package:newtoktask/utils.dart';
 
 void main() async {
-  await setup();
+  WidgetsFlutterBinding.ensureInitialized();
+  await setupFirebase();
+  registerServices();
   runApp(MyApp());
 }
 
-Future<void> setup() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await setupFirebase();
-  await registerServices();
-}
-
 class MyApp extends StatelessWidget {
-  final GetIt getIt = GetIt.instance;
-
-  late NavigationService _navigationService;
-
-  MyApp({super.key}) {
-    _navigationService = getIt.get<NavigationService>();
-  }
+  final NavigationService _navigationService = GetIt.instance.get<NavigationService>();
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(debugShowCheckedModeBanner: false,
-      navigatorKey: _navigationService.navigatorkey,
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      navigatorKey: _navigationService.navigatorKey,
       title: 'Video Player',
       theme: ThemeData(
         textTheme: GoogleFonts.montserratTextTheme(),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: SplashScreen(),  // Set SplashScreen as the home widget
+      home: SplashScreen(),
       routes: _navigationService.routes,
     );
   }

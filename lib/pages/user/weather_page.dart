@@ -6,7 +6,7 @@ import 'package:weather/weather.dart';
 
 class WeatherPage extends StatefulWidget {
   final String city;
-  const WeatherPage({super.key, required this.city});
+  const WeatherPage({super.key,  required this.city});
 
   @override
   State<WeatherPage> createState() => _WeatherPageState();

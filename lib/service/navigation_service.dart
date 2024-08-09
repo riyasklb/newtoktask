@@ -7,44 +7,32 @@ import 'package:newtoktask/pages/user/user_page.dart';
 import 'package:newtoktask/pages/auth/login_page.dart';
 import 'package:newtoktask/pages/auth/register_page.dart';
 import 'package:newtoktask/pages/auth/splash_screen.dart';
-
+import 'package:newtoktask/pages/user/weather_page.dart';
 
 class NavigationService {
-  late GlobalKey<NavigatorState> _navigatorkey;
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-  final Map<String, Widget Function(BuildContext)> _routes = {
+  final Map<String, Widget Function(BuildContext)> routes = {
     "/login": (context) => LoginPage(),
     "/userHome": (context) => UserPage(),
-    '/adminHome': (context) => AdminPage(),
+    "/adminHome": (context) => AdminPage(),
     "/registration": (context) => RegisterPage(),
-    "/splash": (context) => SplashScreen(), // Add SplashScreen route
+    "/splash": (context) => SplashScreen(),
     "/addlocationpage": (context) => AddLocationScreen(),
-    "/countylistpage":(context)=>LocationListScreen(),
-    "/uploadexelpage":(context)=>ExcelParserScreen(),
-  
+    "/countylistpage": (context) => LocationListScreen(),
+    "/uploadexelpage": (context) => ExcelParserScreen(),
+    "/weatherpage": (context) => WeatherPage(city: ''),
   };
 
-  GlobalKey<NavigatorState>? get navigatorkey {
-    return _navigatorkey;
-  }
-
-  Map<String, Widget Function(BuildContext)> get routes {
-    return _routes;
-  }
-
-  NavigationService() {
-    _navigatorkey = GlobalKey<NavigatorState>();
-  }
-
   void pushNamed(String routeName) {
-    _navigatorkey.currentState?.pushNamed(routeName);
+    navigatorKey.currentState?.pushNamed(routeName);
   }
 
   void pushReplacementNamed(String routeName) {
-    _navigatorkey.currentState?.pushReplacementNamed(routeName);
+    navigatorKey.currentState?.pushReplacementNamed(routeName);
   }
 
   void goBack() {
-    _navigatorkey.currentState?.pop();
+    navigatorKey.currentState?.pop();
   }
 }
