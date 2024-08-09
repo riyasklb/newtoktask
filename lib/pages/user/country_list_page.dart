@@ -1,12 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:newtoktask/pages/user/user_page.dart';
+import 'package:newtoktask/pages/user/weather_page.dart';
 import 'package:newtoktask/service/firestore_service.dart';
 
 class LocationListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Locations')),
+      appBar: AppBar(
+          leading: IconButton(
+              onPressed: () {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => UserPage()));
+              },
+              icon: Icon(Icons.arrow_back_ios)),
+          title: Text('Locations')),
       body: FutureBuilder<List<QueryDocumentSnapshot>>(
         future: FirestoreService().getAllLocations(),
         builder: (context, snapshot) {
@@ -22,12 +31,22 @@ class LocationListScreen extends StatelessWidget {
               itemCount: locations.length,
               itemBuilder: (context, index) {
                 var location = locations[index];
-                return Card(
-                  child: ListTile(
-                    title: Text(
-                        '${location['city']}, ${location['district']}, ${location['state']}, ${location['country']}'),
-                    subtitle: Text(
-                        'Country: ${location['country']}\nState: ${location['state']}\nDistrict: ${location['district']}\nCity: ${location['city']}'),
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => WeatherPage(
+                                  city: location['city'],
+                                )));
+                  },
+                  child: Card(
+                    child: ListTile(
+                      title: Text(
+                          '${location['city']}, ${location['district']}, ${location['state']}, ${location['country']}'),
+                      subtitle: Text(
+                          'Country: ${location['country']}\nState: ${location['state']}\nDistrict: ${location['district']}\nCity: ${location['city']}'),
+                    ),
                   ),
                 );
               },

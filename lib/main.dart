@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp(debugShowCheckedModeBanner: false,
       navigatorKey: _navigationService.navigatorkey,
       title: 'Video Player',
       theme: ThemeData(

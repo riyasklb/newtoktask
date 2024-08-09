@@ -8,6 +8,7 @@ import 'package:newtoktask/pages/auth/login_page.dart';
 import 'package:newtoktask/pages/auth/register_page.dart';
 import 'package:newtoktask/pages/auth/splash_screen.dart';
 
+
 class NavigationService {
   late GlobalKey<NavigatorState> _navigatorkey;
 
@@ -20,6 +21,7 @@ class NavigationService {
     "/addlocationpage": (context) => AddLocationScreen(),
     "/countylistpage":(context)=>LocationListScreen(),
     "/uploadexelpage":(context)=>ExcelParserScreen(),
+  
   };
 
   GlobalKey<NavigatorState>? get navigatorkey {
