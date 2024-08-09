@@ -7,6 +7,7 @@ import 'package:newtoktask/service/navigation_service.dart';
 import 'package:newtoktask/widget/const.dart';
 import 'package:newtoktask/widget/custiom_formfiled.dart';
 
+
 class LoginPage extends StatefulWidget {
   LoginPage({super.key});
 
@@ -15,6 +16,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  bool _isLoading = false;
+
   @override
   void initState() {
     _authService = _getIt.get<AuthService>();
@@ -37,21 +40,30 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _buildUI(),
-    );
-  }
-
-  Widget _buildUI() {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            _formFields(),
-            _createAccount(),
-          ],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Welcome Back!',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 20),
+              _formFields(),
+              SizedBox(height: 20),
+              if (_isLoading)
+                CircularProgressIndicator()
+              else
+                _loginButton(),
+              SizedBox(height: 20),
+              _createAccount(),
+            ],
+          ),
         ),
       ),
     );
@@ -61,28 +73,24 @@ class _LoginPageState extends State<LoginPage> {
     return Form(
       key: _loginFormKey,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CustomFormField(
             hintText: 'Email',
             regExpressionValidation: EMAIL_VALIDATION_REGEX,
             onSaved: (value) {
-              setState(() {
-                email = value;
-              });
+              email = value;
             },
           ),
+          SizedBox(height: 10),
           CustomFormField(
             hintText: 'Password',
             regExpressionValidation: PASSWORD_VALIDATION_REGEX,
             onSaved: (value) {
-              setState(() {
-                password = value;
-              });
+              password = value;
             },
+           
           ),
-          _loginButton(),
         ],
       ),
     );
@@ -94,44 +102,28 @@ class _LoginPageState extends State<LoginPage> {
       child: ElevatedButton(
         onPressed: () async {
           if (_loginFormKey.currentState?.validate() ?? false) {
-            print('-----------------------1--------------------------');
             _loginFormKey.currentState?.save();
-              print('-----------------------2--------------------------');
-            try {
-               print('-----------------------3--------------------------');
-              bool result = await _authService.login(email!, password!);
-               print('-----------------------4--------------------------');
-              if (result) {
-               print('-----------------------5--------------------------');
+            setState(() {
+              _isLoading = true;
+            });
 
+            try {
+              bool result = await _authService.login(email!, password!);
+              if (result) {
                 final user = _authService.user;
-                 print('-----------------------6--------------------------');
                 if (user != null) {
-                   print('-----------------------7--------------------------');
                   final userProfile =
                       await _databaseService.getUserProfileByUid(user.uid);
-                          print('-----------------------8--------------------------');
                   if (userProfile != null) {
-                    print('-----------------------9--------------------------');
                     if (userProfile.role == 'Admin') {
-                      
-                    print('-----------------------10--------------------------');
-                      print(
-                          '--------------- ${userProfile.role}------------------------');
                       _navigationService.pushReplacementNamed('/adminHome');
-                      _alertService.showToast(
-                        text: 'Successfully logged in',
-                        icon: Icons.check,
-                      );
                     } else if (userProfile.role == 'User') {
-                      print(
-                          '--------------- ${userProfile.role}------------------------');
                       _navigationService.pushReplacementNamed('/userHome');
-                      _alertService.showToast(
-                        text: 'Successfully logged in',
-                        icon: Icons.check,
-                      );
                     }
+                    _alertService.showToast(
+                      text: 'Successfully logged in',
+                      icon: Icons.check,
+                    );
                   } else {
                     _alertService.showToast(
                       text: 'User profile not found',
@@ -155,33 +147,41 @@ class _LoginPageState extends State<LoginPage> {
                 text: 'An error occurred: $e',
                 icon: Icons.error,
               );
+            } finally {
+              setState(() {
+                _isLoading = false;
+              });
             }
           }
         },
         child: Text('Login'),
+        style: ElevatedButton.styleFrom(
+          padding: EdgeInsets.symmetric(vertical: 15),
+          textStyle: TextStyle(fontSize: 18),
+        ),
       ),
     );
   }
 
   Widget _createAccount() {
-    return Expanded(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text("Don't have an account?"),
-          InkWell(
-            onTap: () {
-              _navigationService.pushNamed("/registration");
-            },
-            child: const Text(
-              'Sign Up',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text("Don't have an account? "),
+        GestureDetector(
+          onTap: () {
+            _navigationService.pushNamed("/registration");
+          },
+          child: Text(
+            'Sign Up',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).primaryColor,
             ),
-          )
-        ],
-      ),
+          ),
+        ),
+      ],
     );
   }
 }
- 

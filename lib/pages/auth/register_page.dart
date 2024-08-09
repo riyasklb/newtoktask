@@ -9,7 +9,6 @@ import 'package:newtoktask/service/media_service%20.dart';
 
 import 'package:newtoktask/service/navigation_service.dart';
 import 'package:newtoktask/service/storge_service.dart';
-
 import 'package:newtoktask/widget/const.dart';
 import 'package:newtoktask/widget/custiom_formfiled.dart';
 
@@ -28,7 +27,7 @@ class _RegisterPageState extends State<RegisterPage> {
   late NavigationService _navigationService;
   late AuthService _authService;
   late MediaService _mediaService;
-  
+
   final GlobalKey<FormState> _registerFormKey = GlobalKey();
   final GetIt _getIt = GetIt.instance;
 
@@ -147,6 +146,9 @@ class _RegisterPageState extends State<RegisterPage> {
         backgroundImage: selectedImage != null
             ? FileImage(selectedImage!)
             :  NetworkImage(PLACEHOLDER_PFP) as ImageProvider,
+        child: selectedImage == null
+            ? Icon(Icons.add_a_photo, color: Colors.white)
+            : null,
       ),
     );
   }
@@ -156,7 +158,14 @@ class _RegisterPageState extends State<RegisterPage> {
       width: double.infinity,
       child: MaterialButton(
         onPressed: () async {
-          if (_registerFormKey.currentState?.validate() ?? false && selectedImage != null) {
+          if (_registerFormKey.currentState?.validate() ?? false) {
+            if (selectedImage == null) {
+              _alertService.showToast(
+                text: 'Please select a profile picture',
+                icon: Icons.error,
+              );
+              return;
+            }
             setState(() {
               isLoading = true;
             });
@@ -174,7 +183,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       role: role!,
                     ),
                   );
-                  _navigationService.goBack();
                   _navigateToRoleBasedScreen(role!);
                   _alertService.showToast(text: 'User registered successfully', icon: Icons.check);
                 } else {
@@ -193,6 +201,9 @@ class _RegisterPageState extends State<RegisterPage> {
           }
         },
         child: const Text('Register'),
+        color: Theme.of(context).primaryColor,
+        textColor: Colors.white,
+        padding: EdgeInsets.symmetric(vertical: 15),
       ),
     );
   }
@@ -203,14 +214,14 @@ class _RegisterPageState extends State<RegisterPage> {
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text("Already Have An Account"),
+          const Text("Already Have An Account? "),
           InkWell(
             onTap: () {
-           _navigationService.pushReplacementNamed('/login');
+              _navigationService.pushReplacementNamed('/login');
             },
             child: const Text(
               'Login',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.blue),
             ),
           ),
         ],
@@ -218,8 +229,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-
-    void _navigateToRoleBasedScreen(String role) {
+  void _navigateToRoleBasedScreen(String role) {
     if (role == 'Admin') {
       _navigationService.pushReplacementNamed('/adminHome');
     } else {
