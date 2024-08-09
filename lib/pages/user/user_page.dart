@@ -73,8 +73,9 @@ class _UserPageState extends State<UserPage> {
             onTap: () {
               _navigationService.pushNamed('/countylistpage');
             },
-            child: Text('users data'))
-      ],
+            child: Text('users data')),
+    InkWell(onTap:()=> _navigationService.pushNamed('/uploadexelpage'),
+      child: SizedBox(height: 50,child: Text('upload file'),))  ],
     );
   }
 }

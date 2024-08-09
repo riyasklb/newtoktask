@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:newtoktask/service/navigation_service.dart';
-import 'package:newtoktask/pages/splash_screen.dart';
+import 'package:newtoktask/pages/auth/splash_screen.dart';
 import 'package:newtoktask/utils.dart';
 
 void main() async {

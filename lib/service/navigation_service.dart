@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:newtoktask/pages/admin/admin_page.dart';
 import 'package:newtoktask/pages/admin/location_selection_page.dart';
 import 'package:newtoktask/pages/user/country_list_page.dart';
+import 'package:newtoktask/pages/user/upload_exel_page.dart';
 import 'package:newtoktask/pages/user/user_page.dart';
-import 'package:newtoktask/pages/login_page.dart';
-import 'package:newtoktask/pages/register_page.dart';
-import 'package:newtoktask/pages/splash_screen.dart';
+import 'package:newtoktask/pages/auth/login_page.dart';
+import 'package:newtoktask/pages/auth/register_page.dart';
+import 'package:newtoktask/pages/auth/splash_screen.dart';
 
 class NavigationService {
   late GlobalKey<NavigatorState> _navigatorkey;
@@ -18,6 +19,7 @@ class NavigationService {
     "/splash": (context) => SplashScreen(), // Add SplashScreen route
     "/addlocationpage": (context) => AddLocationScreen(),
     "/countylistpage":(context)=>LocationListScreen(),
+    "/uploadexelpage":(context)=>ExcelParserScreen(),
   };
 
   GlobalKey<NavigatorState>? get navigatorkey {
