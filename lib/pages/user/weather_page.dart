@@ -1,42 +1,108 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:newtoktask/pages/user/country_list_page.dart';
+import 'package:newtoktask/service/alert_service.dart';
+import 'package:newtoktask/service/auth_service.dart';
+import 'package:newtoktask/service/navigation_service.dart';
 import 'package:newtoktask/widget/const.dart';
 import 'package:weather/weather.dart';
 
 class WeatherPage extends StatefulWidget {
   final String city;
-  const WeatherPage({super.key,  required this.city});
+  const WeatherPage({super.key, required this.city});
 
   @override
   State<WeatherPage> createState() => _WeatherPageState();
 }
 
 class _WeatherPageState extends State<WeatherPage> {
+   final GetIt _getIt = GetIt.instance;
   final WeatherFactory _wf = WeatherFactory(OPENWEATHER_API_KEY);
-
   Weather? _weather;
+  bool _isLoading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
     super.initState();
-    _wf.currentWeatherByCityName(widget.city.toLowerCase()).then((w) {
+     _navigationService = _getIt.get<NavigationService>();
+       _alertService = _getIt.get<AlertService>();
+    _fetchWeather();
+  }
+    late NavigationService _navigationService;
+  late AlertService _alertService;
+  Future<void> _fetchWeather() async {
+    try {
+      final weather = await _wf.currentWeatherByCityName(widget.city);
       setState(() {
-        _weather = w;
+        _weather = weather;
+        _isLoading = false;
       });
-    });
+    } catch (e) {
+      setState(() {
+        _hasError = true;
+        _isLoading = false;
+      });
+      _alertService.showToast(
+                      text: 'city not found',
+                      icon: Icons.error,
+                    );
+                    _navigationService.goBack();
+      // You might want to log the error or show a message to the user
+      print('Error fetching weather: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(backgroundColor: Colors.white,
+        appBar: AppBar(backgroundColor: Colors.white,
+          leading: IconButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LocationListScreen(),
+                  ),
+                );
+              },
+              icon: Icon(Icons.arrow_back_ios)),
+        ),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_hasError) {
+      return Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LocationListScreen(),
+                  ),
+                );
+              },
+              icon: Icon(Icons.arrow_back_ios)),
+        ),
+        body: Center(child: Text('Error fetching weather data')),
+      );
+    }
+
     return Scaffold(
-      appBar: AppBar(
+      appBar: AppBar(title: Text('weather in ${
+      _weather?.areaName ?? ""}'),
         leading: IconButton(
             onPressed: () {
               Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => LocationListScreen()));
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LocationListScreen(),
+                ),
+              );
             },
             icon: Icon(Icons.arrow_back_ios)),
       ),
@@ -46,9 +112,7 @@ class _WeatherPageState extends State<WeatherPage> {
 
   Widget _buildUI() {
     if (_weather == null) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return Center(child: Text('No weather data available.'));
     }
     return SizedBox(
       width: MediaQuery.sizeOf(context).width,
@@ -91,7 +155,7 @@ class _WeatherPageState extends State<WeatherPage> {
   }
 
   Widget _dateTimeInfo() {
-    DateTime now = _weather!.date!;
+    DateTime now = _weather?.date ?? DateTime.now();
     return Column(
       children: [
         Text(
@@ -127,6 +191,10 @@ class _WeatherPageState extends State<WeatherPage> {
   }
 
   Widget _weatherIcon() {
+    final iconUrl = _weather?.weatherIcon != null
+        ? "http://openweathermap.org/img/wn/${_weather!.weatherIcon}@4x.png"
+        : "http://openweathermap.org/img/wn/01d@4x.png"; // Default icon
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -136,8 +204,7 @@ class _WeatherPageState extends State<WeatherPage> {
           height: MediaQuery.sizeOf(context).height * 0.20,
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: NetworkImage(
-                  "http://openweathermap.org/img/wn/${_weather?.weatherIcon}@4x.png"),
+              image: NetworkImage(iconUrl),
             ),
           ),
         ),
@@ -154,7 +221,7 @@ class _WeatherPageState extends State<WeatherPage> {
 
   Widget _currentTemp() {
     return Text(
-      "${_weather?.temperature?.celsius?.toStringAsFixed(0)}° C",
+      "${_weather?.temperature?.celsius?.toStringAsFixed(0) ?? "N/A"}° C",
       style: const TextStyle(
         color: Colors.black,
         fontSize: 90,
@@ -186,14 +253,14 @@ class _WeatherPageState extends State<WeatherPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Max: ${_weather?.tempMax?.celsius?.toStringAsFixed(0)}° C",
+                "Max: ${_weather?.tempMax?.celsius?.toStringAsFixed(0) ?? "N/A"}° C",
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 15,
                 ),
               ),
               Text(
-                "Min: ${_weather?.tempMin?.celsius?.toStringAsFixed(0)}° C",
+                "Min: ${_weather?.tempMin?.celsius?.toStringAsFixed(0) ?? "N/A"}° C",
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 15,
@@ -207,14 +274,14 @@ class _WeatherPageState extends State<WeatherPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Wind: ${_weather?.windSpeed?.toStringAsFixed(0)}m/s",
+                "Wind: ${_weather?.windSpeed?.toStringAsFixed(0) ?? "N/A"}m/s",
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 15,
                 ),
               ),
               Text(
-                "Humidity: ${_weather?.humidity?.toStringAsFixed(0)}%",
+                "Humidity: ${_weather?.humidity?.toStringAsFixed(0) ?? "N/A"}%",
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 15,

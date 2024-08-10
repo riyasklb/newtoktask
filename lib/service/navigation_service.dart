@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:newtoktask/pages/admin/admin_page.dart';
 import 'package:newtoktask/pages/admin/location_selection_page.dart';
 import 'package:newtoktask/pages/user/country_list_page.dart';
-import 'package:newtoktask/pages/user/upload_exel_page.dart';
+
 import 'package:newtoktask/pages/user/user_page.dart';
 import 'package:newtoktask/pages/auth/login_page.dart';
 import 'package:newtoktask/pages/auth/register_page.dart';
@@ -15,12 +15,11 @@ class NavigationService {
   final Map<String, Widget Function(BuildContext)> routes = {
     "/login": (context) => LoginPage(),
     "/userHome": (context) => UserPage(),
-    "/adminHome": (context) => AdminPage(),
+    "/adminHome": (context) => AdminDashboardScreen(),
     "/registration": (context) => RegisterPage(),
     "/splash": (context) => SplashScreen(),
     "/addlocationpage": (context) => AddLocationScreen(),
     "/countylistpage": (context) => LocationListScreen(),
-    "/uploadexelpage": (context) => ExcelParserScreen(),
     "/weatherpage": (context) => WeatherPage(city: ''),
   };
 

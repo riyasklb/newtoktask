@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:newtoktask/service/alert_service.dart';
 import 'package:newtoktask/service/firestore_service.dart';
-
 
 class AddLocationScreen extends StatefulWidget {
   @override
@@ -8,11 +9,29 @@ class AddLocationScreen extends StatefulWidget {
 }
 
 class _AddLocationScreenState extends State<AddLocationScreen> {
+  final GetIt _getIt = GetIt.instance;
+  late AlertService _alertService;
   final _formKey = GlobalKey<FormState>();
-  String country = '';
-  String state = '';
-  String district = '';
-  String city = '';
+  final Map<String, TextEditingController> _controllers = {
+    'country': TextEditingController(),
+    'state': TextEditingController(),
+    'district': TextEditingController(),
+    'city': TextEditingController(),
+  };
+  bool _isLoading = false; // Variable to track loading state
+
+  @override
+  void initState() {
+    super.initState();
+    _alertService = _getIt.get<AlertService>();
+  }
+
+  @override
+  void dispose() {
+    // Dispose the controllers to prevent memory leaks
+    _controllers.forEach((_, controller) => controller.dispose());
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,76 +39,112 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
       appBar: AppBar(
         title: Text('Add Location'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Country'),
-                onSaved: (value) {
-                  country = value!;
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a country';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'State'),
-                onSaved: (value) {
-                  state = value!;
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a state';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'District'),
-                onSaved: (value) {
-                  district = value!;
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a district';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'City'),
-                onSaved: (value) {
-                  city = value!;
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a city';
-                  }
-                  return null;
-                },
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    _formKey.currentState?.save();
-                    await FirestoreService().addLocation(country, state, district, city);
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text('Location added successfully!')));
-                    // Optionally, you might want to navigate back or clear the form
-                  }
-                },
-                child: Text('Add Location'),
-              )
-            ],
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Add a New Location',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 20),
+                Expanded(
+                  child: Form(
+                    key: _formKey,
+                    child: ListView(
+                      children: [
+                        _buildTextField('Country', 'country'),
+                        _buildTextField('State', 'state'),
+                        _buildTextField('District', 'district'),
+                        _buildTextField('City', 'city'),
+                        SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: _handleSubmit,
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Text('Add Location'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+          if (_isLoading) // Show loader if loading
+            Center(
+              child: CircularProgressIndicator(),
+            ),
+        ],
       ),
     );
+  }
+
+  Widget _buildTextField(String label, String key) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: TextFormField(
+        controller: _controllers[key],
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter a $label';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  Future<void> _handleSubmit() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      _formKey.currentState?.save();
+      setState(() {
+        _isLoading = true; // Show loader
+      });
+      try {
+        await FirestoreService().addLocation(
+          _controllers['country']!.text,
+          _controllers['state']!.text,
+          _controllers['district']!.text,
+          _controllers['city']!.text,
+        );
+        _alertService.showToast(
+          text: 'Location added successfully!',
+          icon: Icons.check,
+        );
+        Navigator.pop(context); // Go back to the previous screen
+      } catch (e) {
+        _alertService.showToast(
+          text: "Can't add location, try again",
+          icon: Icons.error,
+        );
+      } finally {
+        setState(() {
+          _isLoading = false; // Hide loader
+        });
+      }
+    } else {
+      _alertService.showToast(
+        text: "Please fill in all fields correctly",
+        icon: Icons.error,
+      );
+    }
   }
 }
